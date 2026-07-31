@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary-color: #4a67e7f8; /* Default: blue-600 */
+    --primary-hover-color: #1d4ed8; /* Default: blue-700 */
+}
+
+[x-cloak] {
+    display: none;
+}
