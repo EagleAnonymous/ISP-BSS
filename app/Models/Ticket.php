@@ -42,14 +42,20 @@ class Ticket extends Model
     }
 
     /**
-     * Work out the next ticket number, e.g. "TCK-00042". Locks the tickets
-     * table briefly while counting, so two tickets created at the same
-     * moment (from the admin form or the staff form) can't be handed the
-     * same number.
+     * Work out the next ticket number, e.g. "TCK-00042".
+     *
+     * Uses PostgreSQL-compatible row locking on the latest record instead of
+     * applying `lockForUpdate()` on an aggregate `count()`, since Postgres
+     * rejects "FOR UPDATE with aggregate functions" (the same pattern used
+     * by BillingController::nextInvoiceNumber()). Two tickets created at the
+     * same moment can't be handed the same number because the latest row is
+     * locked while the count is computed.
      */
     public static function nextNumber(): string
     {
-        $next = static::lockForUpdate()->count() + 1;
+        $last = static::query()->latest('id')->lockForUpdate()->first();
+
+        $next = $last ? ($last->id + 1) : 1;
 
         return 'TCK-'.str_pad((string) $next, 5, '0', STR_PAD_LEFT);
     }

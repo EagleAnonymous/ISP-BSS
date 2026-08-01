@@ -26,7 +26,7 @@ return new class extends Migration
             // Only two stored ground-truth states. "Overdue" is derived on read
             // (unpaid + due_date passed) rather than stored, so it's always
             // correct without depending on a scheduled job to flip it.
-            $table->enum('status', ['unpaid', 'paid'])->default('unpaid');
+            $table->string('status')->default('unpaid');
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
         });

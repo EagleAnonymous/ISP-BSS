@@ -12,7 +12,7 @@ use App\Models\Payment;
 use App\Models\Subscription;
 use App\Notifications\OverdueReminder;
 use App\Services\BillingSummary;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -195,7 +195,7 @@ class BillingController extends Controller
             ->with('reminders_sent_count', $overdueInvoices->count());
     }
 
-    private function filteredInvoices(Request $request): Builder
+    private function filteredInvoices(Request $request): EloquentBuilder
     {
         $query = Invoice::query()->with(['subscriber.user', 'adjustments'])->latest();
 
@@ -226,13 +226,14 @@ class BillingController extends Controller
     /**
      * Work out the next invoice number, e.g. "INV-2026-000123".
      *
-     * `lockForUpdate()` prevents two invoices generated in the same moment
-     * from being handed the same number (see the matching comment on
-     * `SubscriberController::nextSubscriberId()` for the full reasoning).
+     * Uses PostgreSQL-compatible row locking on the latest record
+     * instead of applying `lockForUpdate()` on an aggregate `count()`.
      */
     private function nextInvoiceNumber(): string
     {
-        $next = Invoice::lockForUpdate()->count() + 1;
+        $lastInvoice = Invoice::orderBy('id', 'desc')->lockForUpdate()->first();
+
+        $next = $lastInvoice ? ($lastInvoice->id + 1) : 1;
 
         return 'INV-'.now()->format('Y').'-'.str_pad((string) $next, 6, '0', STR_PAD_LEFT);
     }

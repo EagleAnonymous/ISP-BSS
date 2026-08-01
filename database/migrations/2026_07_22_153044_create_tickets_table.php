@@ -16,17 +16,14 @@ return new class extends Migration
             $table->string('ticket_number')->unique();
             $table->foreignId('subscriber_id')->constrained()->cascadeOnDelete();
 
-            $table->enum('category', [
-                'no_connection', 'slow_connection', 'billing_concern',
-                'installation_request', 'equipment_issue', 'other',
-            ]);
+            $table->string('category');
             $table->string('subject');
             $table->text('description');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
+            $table->string('priority')->default('medium');
 
             // open -> assigned -> in_progress -> resolved -> closed.
             // See Ticket status-transition comments in the controllers for who can move it between each state.
-            $table->enum('status', ['open', 'assigned', 'in_progress', 'resolved', 'closed'])->default('open');
+            $table->string('status')->default('open');
 
             // Null until a technical staff member claims it from the shared queue.
             $table->foreignId('assigned_to')->nullable()->constrained('technical_staff')->nullOnDelete();

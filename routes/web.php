@@ -81,6 +81,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/create', [AdminTicketController::class, 'create'])->name('create');
         Route::post('/', [AdminTicketController::class, 'store'])->name('store');
         Route::get('/{ticket}', [AdminTicketController::class, 'show'])->name('show');
+        Route::get('/{ticket}/print', [AdminTicketController::class, 'print'])->name('print');
         Route::post('/{ticket}/close', [AdminTicketController::class, 'close'])->name('close');
     });
 });
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'role:technical_staff'])->prefix('staff')->name('staf
         Route::get('/create', [StaffTicketController::class, 'create'])->name('create');
         Route::post('/', [StaffTicketController::class, 'store'])->name('store');
         Route::get('/{ticket}', [StaffTicketController::class, 'show'])->name('show');
+        Route::get('/{ticket}/print', [StaffTicketController::class, 'print'])->name('print');
         Route::post('/{ticket}/claim', [StaffTicketController::class, 'claim'])->name('claim');
         Route::patch('/{ticket}/start', [StaffTicketController::class, 'start'])->name('start');
         Route::patch('/{ticket}/resolve', [StaffTicketController::class, 'resolve'])->name('resolve');
@@ -111,7 +113,14 @@ Route::middleware(['auth', 'role:technical_staff'])->prefix('staff')->name('staf
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:subscriber'])->prefix('subscriber')->name('subscriber.')->group(function () {
-    Route::get('/dashboard', SubscriberDashboardController::class)->name('dashboard');
+    Route::get('/dashboard', [SubscriberDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/account', [SubscriberDashboardController::class, 'account'])->name('account');
+    Route::get('/billing', [SubscriberDashboardController::class, 'billing'])->name('billing');
+    Route::get('/chatbot', [SubscriberDashboardController::class, 'chatbot'])->name('chatbot');
+    
+    // Chatbot AI chat + ticket escalation (handled in Subscriber DashboardController)
+    Route::post('/chatbot/chat', [SubscriberDashboardController::class, 'chat'])->name('chatbot.chat');
+    Route::post('/chatbot/ticket', [SubscriberDashboardController::class, 'storeTicket'])->name('chatbot.ticket');
 });
 
 /*

@@ -76,6 +76,17 @@ class TicketController extends Controller
     }
 
     /**
+     * Print-friendly view of a ticket for field technicians. Designed to be
+     * saved as a PDF via the browser's "Print → Save as PDF".
+     */
+    public function print(Ticket $ticket): View
+    {
+        $ticket->load(['subscriber.user', 'assignee.user', 'creator']);
+
+        return view('staff.tickets.print', ['ticket' => $ticket]);
+    }
+
+    /**
      * Claim an open ticket from the shared queue (self-assign).
      *
      * The row is locked for the duration of this check-then-update so that

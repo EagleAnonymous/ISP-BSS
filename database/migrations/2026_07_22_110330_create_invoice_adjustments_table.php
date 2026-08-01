@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('invoice_adjustments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', ['credit', 'charge']);
+            $table->string('type');
             $table->decimal('amount', 8, 2);
             $table->string('reason');
             $table->foreignId('created_by')->constrained('users');

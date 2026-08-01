@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('speed');
             $table->decimal('price', 8, 2);
-            $table->enum('billing_cycle', ['monthly', 'yearly']);
+            $table->string('billing_cycle');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

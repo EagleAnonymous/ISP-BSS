@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subscriptions', function (Blueprint $table) {
+        Schema::create('tables', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subscriber_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('plan_id')->constrained();
-            $table->decimal('locked_price', 8, 2);
-            $table->string('status')->default('active');
-            $table->date('starts_at');
             $table->timestamps();
         });
     }
@@ -27,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subscriptions');
+        Schema::dropIfExists('tables');
     }
 };

@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTicketRequest;
 use App\Models\ActivityLog;
 use App\Models\Subscriber;
-use App\Models\Ticket;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use App\Models\Ticket; // Ensure this is the correct Ticket model
+use Illuminate\Database\Eloquent\Builder; // Use the concrete Eloquent Builder
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +78,17 @@ class TicketController extends Controller
             ->get();
 
         return view('admin.tickets.show', ['ticket' => $ticket, 'activity' => $activity]);
+    }
+
+    /**
+     * Print-friendly view of a ticket for field technicians. Designed to be
+     * saved as a PDF via the browser's "Print → Save as PDF".
+     */
+    public function print(Ticket $ticket): View
+    {
+        $ticket->load(['subscriber.user', 'assignee.user', 'creator']);
+
+        return view('admin.tickets.print', ['ticket' => $ticket]);
     }
 
     /**
