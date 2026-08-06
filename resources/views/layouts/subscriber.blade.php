@@ -7,18 +7,24 @@
 
         <title>ISP BSS &middot; Subscriber</title>
 
-        <!-- Fonts -->
+        {{-- Global app favicon --}}
+        <link rel="icon" type="image/png" href="{{ asset('image/icon-removebg-preview.png') }}">
+
+        <!-- Load app fonts for display -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
+        <!-- Bundle JS and CSS assets -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- Instant page prefetching for instant navigation --}}
+        <script src="https://instant.page/instantpage.js" defer></script>
     </head>
-    <body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false }">
+<body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false }">
         <div class="min-h-screen flex">
-            <!-- Sidebar -->
+            <!-- Sidebar holds all main navigation -->
             <aside
-                class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 border-r border-blue-800 flex flex-col transform transition-transform duration-150 ease-in-out
+                class="fixed inset-y-0 left-0 z-30 w-56 bg-gray-900 border-r border-blue-800 flex flex-col transform transition-transform duration-150 ease-in-out
                        lg:translate-x-0 lg:flex overflow-y-auto"
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
             >
@@ -28,6 +34,7 @@
                 </div>
 
                 <nav class="flex-1 px-3 py-4 space-y-1">
+                    {{-- Navigation with distinct feature icons --}}
                     <a href="{{ route('subscriber.dashboard') }}"
                        class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-medium transition
                               {{ request()->routeIs('subscriber.dashboard') ? 'bg-blue-900 text-blue-300' : 'text-white hover:bg-gray-800 hover:text-blue-300' }}">
@@ -44,8 +51,7 @@
                               {{ request()->routeIs('subscriber.account') ? 'bg-blue-900 text-blue-300' : '' }}">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 8.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM15.75 8.25a.75.75 0 01-.75.75h-3a.75.75 0 01-.75-.75v-1.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v1.5z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM3.75 20.25a8.25 8.25 0 0116.5 0" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             My Account
                         </span>
@@ -56,7 +62,7 @@
                               {{ request()->routeIs('subscriber.billing') ? 'bg-blue-900 text-blue-300' : '' }}">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
                             </svg>
                             Billing
                         </span>
@@ -66,7 +72,7 @@
                        class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 hover:text-blue-300 transition
                               {{ request()->routeIs('subscriber.chatbot') ? 'bg-blue-900 text-blue-300' : '' }}">
                         <span class="flex items-center gap-3">
-                            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 5V20.7929C3 21.2383 3.53857 21.4614 3.85355 21.1464L7.70711 17.2929C7.89464 17.1054 8.149 17 8.41421 17H19C20.1046 17 21 16.1046 21 15V5C21 3.89543 20.1046 3 19 3H5C3.89543 3 3 3.89543 3 5Z" />
                                 <path d="M15 12C14.2005 12.6224 13.1502 13 12 13C10.8498 13 9.79952 12.6224 9 12" />
                                 <path d="M9 8.01953V8" />
@@ -77,35 +83,26 @@
                     </a>
                 </nav>
 
-                <div class="border-t border-gray-700 p-3">
-                    <div class="flex items-center gap-3 px-3 py-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-gray-400 truncate">{{ Auth::user()->email }}</p>
-                        </div>
-                    </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="mt-1 w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-white hover:bg-gray-800 hover:text-blue-300 transition">
-                            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0110.5 3h6a2.25 2.25 0 012.25 2.25v13.5A2.25 2.25 0 0116.5 21h-6a2.25 2.25 0 01-2.25-2.25V15m-3 0l-3-3m0 0l3-3m-3 3H15" />
-                            </svg>
-                            Log out
-                        </button>
-                    </form>
-                </div>
+                {{-- Logout button at sidebar bottom --}}
+                <form method="POST" action="{{ route('logout') }}" class="px-3 pb-4">
+                    @csrf
+
+                    <button type="submit"
+                            class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-800 hover:text-red-300 transition">
+                        <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                        Logout
+                    </button>
+                </form>
             </aside>
 
-            <!-- Mobile overlay -->
+            <!-- Mobile menu overlay backdrop layer -->
             <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-gray-900/70 lg:hidden"></div>
 
-            <!-- Main column -->
-            <div class="flex-1 flex flex-col min-w-0 lg:pl-64">
-                <!-- Mobile top bar -->
+            <!-- Main content column layout wrapper -->
+            <div class="flex-1 flex flex-col min-w-0 lg:pl-56">
+                <!-- Mobile top bar toggle menu -->
                 <div class="lg:hidden h-16 flex items-center justify-between px-4 bg-gray-900 border-b border-gray-700">
                     <span class="text-lg font-semibold text-white">Smart ISP</span>
                     <button @click="sidebarOpen = ! sidebarOpen" class="p-2 rounded-md text-gray-400 hover:bg-gray-800">
@@ -127,7 +124,7 @@
                     {{ $slot }}
                 </main>
             </div>
-        </div>
+</div>
     </body>
 </html>
 

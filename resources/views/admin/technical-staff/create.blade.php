@@ -27,6 +27,22 @@
                     </div>
 
                     <div>
+                        <label for="employee_id" class="block text-sm font-medium text-gray-700 mb-1.5">Employee ID</label>
+                        <input id="employee_id" type="text" name="employee_id" value="{{ old('employee_id', $nextEmployeeId ?? '') }}" required
+                            placeholder="EMP-00001"
+                            class="block w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600">
+                        <x-input-error :messages="$errors->get('employee_id')" class="mt-1.5" />
+                    </div>
+
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
+                        <input id="role" type="text" name="role" value="{{ old('role') }}" required
+                            placeholder="e.g. Field Technician"
+                            class="block w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600">
+                        <x-input-error :messages="$errors->get('role')" class="mt-1.5" />
+                    </div>
+
+                    <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1.5">Phone number</label>
                         <input id="phone" type="text" name="phone" value="{{ old('phone') }}"
                             placeholder="+63 900 000 0000"

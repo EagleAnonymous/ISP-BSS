@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-#[Fillable(['user_id', 'subscriber_id', 'contact', 'plan_id', 'status', 'joined_date'])]
+#[Fillable(['user_id', 'subscriber_id', 'contact', 'service_address', 'plan_id', 'status', 'joined_date'])]
 class Subscriber extends Model
 {
     /**

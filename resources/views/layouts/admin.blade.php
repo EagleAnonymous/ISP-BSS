@@ -7,14 +7,30 @@
 
         <title>ISP BSS &middot; Admin</title>
 
+        {{-- Global app favicon --}}
+        <link rel="icon" type="image/png" href="{{ asset('image/icon-removebg-preview.png') }}">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- Instant page prefetching for instant navigation --}}
+        <script src="https://instant.page/instantpage.js" defer></script>
     </head>
-    <body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false, navLoading: false }">
+        {{-- Global navigation loading indicator --}}
+        <div x-cloak x-show="navLoading" 
+             x-transition.opacity
+             class="fixed inset-0 z-[60] flex items-center justify-center bg-white/70 backdrop-blur-sm pointer-events-none">
+            <div class="flex flex-col items-center gap-3">
+                <div class="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+                <p class="text-sm font-medium text-gray-700">Loading...</p>
+            </div>
+        </div>
+
         <div class="min-h-screen flex">
             <!-- Sidebar -->
             <aside
@@ -92,10 +108,14 @@
                     </a>
                 </nav>
 
-                <div class="border-t border-gray-200 p-3">
+<div class="border-t border-gray-200 p-3">
                     <div class="flex items-center gap-3 px-3 py-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold shrink-0 overflow-hidden">
+                            @if (Auth::user()->avatar_path)
+                                <img src="{{ asset('storage/' . Auth::user()->avatar_path) }}" alt="Avatar" class="h-full w-full object-cover">
+                            @else
+                                <img src="{{ asset('image/icon.png') }}" alt="Default Avatar" class="h-full w-full object-cover">
+                            @endif
                         </div>
                         <div class="min-w-0">
                             <p class="text-sm font-medium text-gray-900 truncate">{{ Auth::user()->name }}</p>
@@ -143,5 +163,27 @@
                 </main>
             </div>
         </div>
+
+        {{-- Navigation loading indicator script --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const navLinks = document.querySelectorAll('nav a[href^="/"]');
+                
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        // Only for internal navigation
+                        if (this.hostname === window.location.hostname && 
+                            this.getAttribute('href') !== window.location.pathname) {
+                            window.navLoading = true;
+                        }
+                    });
+                });
+                
+                // Hide loading when page is fully loaded
+                window.addEventListener('load', function() {
+                    window.navLoading = false;
+                });
+            });
+        </script>
     </body>
 </html>

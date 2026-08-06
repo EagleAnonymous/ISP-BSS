@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -31,16 +32,28 @@ class GroqService
             throw new RuntimeException('GROQ_API_KEY is not configured. Add it to your .env file and run php artisan config:clear.');
         }
 
-        $response = Http::withToken($this->apiKey)
-            ->acceptJson()
-            ->timeout(60)
-            ->retry(2, 300)
-            ->post($this->baseUrl.'/chat/completions', [
-                'model' => $this->model,
-                'messages' => $messages,
-                'temperature' => $temperature,
-                'max_tokens' => $maxTokens,
-            ]);
+        try {
+            $response = Http::withOptions([
+                'verify' => ! app()->isLocal(),
+            ])
+                ->withToken($this->apiKey)
+                ->acceptJson()
+                ->timeout(30)
+                ->connectTimeout(10)
+                ->retry(2, 300)
+                ->post($this->baseUrl.'/chat/completions', [
+                    'model' => $this->model,
+                    'messages' => $messages,
+                    'temperature' => $temperature,
+                    'max_tokens' => $maxTokens,
+                ]);
+        } catch (ConnectionException $e) {
+            report($e);
+
+            throw new RuntimeException(
+                'Could not connect to the AI service. Please check your network connection and try again.',
+            );
+        }
 
         if ($response->failed()) {
             $status = $response->status();
@@ -59,7 +72,14 @@ class GroqService
 
         $data = $response->json();
 
+        if (! is_array($data) || ! isset($data['choices'][0]['message']['content'])) {
+            Log::error('Groq API unexpected response structure', [
+                'body' => $response->body(),
+            ]);
+
+            throw new RuntimeException('Groq API returned an unexpected response format.');
+        }
+
         return trim($data['choices'][0]['message']['content'] ?? '');
     }
 }
-

@@ -11,16 +11,31 @@ class NewTicketNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public Ticket $ticket)
+    public function __construct(public Ticket $ticket) {}
+
+    /*
+          @return array<int, string>
+         */
+    public function via(object $notifiable): array
     {
+        return ['mail', 'database'];
     }
 
     /*
-      @return array<int, string>
+      Store an in-app notification so admins/staff also see the new
+      ticket in their notification bell, not just via email.
      */
-    public function via(object $notifiable): array
+    public function toDatabase(object $notifiable): array
     {
-        return ['mail'];
+        $ticket = $this->ticket;
+
+        return [
+            'title' => 'New support ticket '.$ticket->ticket_number,
+            'message' => ($ticket->subscriber?->user?->name ?? 'A subscriber').' logged ticket '.$ticket->ticket_number.' ('.ucfirst(str_replace('_', ' ', $ticket->category)).').',
+            'ticket_id' => $ticket->id,
+            'ticket_number' => $ticket->ticket_number,
+            'url' => '/staff/tickets/'.$ticket->id,
+        ];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -45,4 +60,3 @@ class NewTicketNotification extends Notification
             ->line('Please review and assign this ticket so our field technicians can respond promptly.');
     }
 }
-

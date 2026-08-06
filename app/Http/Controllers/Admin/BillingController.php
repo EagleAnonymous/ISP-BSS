@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -143,6 +144,17 @@ class BillingController extends Controller
 
             $locked->update(['status' => 'paid', 'paid_at' => now()]);
 
+            // The subscriber dashboard (and billing page) caches the
+            // outstanding balance and unpaid count for several minutes.
+            // Forget those keys now so the subscriber immediately sees the
+            // cleared balance instead of a stale value until the cache expires.
+            $subscriberUserId = $locked->subscriber?->user_id;
+
+            if ($subscriberUserId) {
+                Cache::forget("subscriber.{$subscriberUserId}.outstanding_balance");
+                Cache::forget("subscriber.{$subscriberUserId}.unpaid_count");
+            }
+
             ActivityLog::record(
                 'invoice.marked_paid',
                 $invoice,
@@ -163,6 +175,15 @@ class BillingController extends Controller
             'reason' => $validated['reason'],
             'created_by' => Auth::id(),
         ]);
+
+        // An adjustment (charge/credit) changes the amount due, so refresh
+        // the subscriber's cached outstanding balance and unpaid count.
+        $subscriberUserId = $invoice->subscriber?->user_id;
+
+        if ($subscriberUserId) {
+            Cache::forget("subscriber.{$subscriberUserId}.outstanding_balance");
+            Cache::forget("subscriber.{$subscriberUserId}.unpaid_count");
+        }
 
         return redirect()->route('admin.billing.index')->with('status', 'adjustment-added');
     }

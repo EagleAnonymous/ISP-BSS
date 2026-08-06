@@ -44,11 +44,25 @@
         </nav>
     </div>
 
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    @if ($tab === 'mine' && request('status'))
+        <div class="mb-4">
+            <a href="{{ route('staff.tickets.index', ['tab' => 'mine']) }}" class="text-sm text-blue-600 hover:text-blue-700">← Back to all my tickets</a>
+        </div>
+    @endif
+
+<div x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 600)">
+        <template x-if="loading">
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                @include('partials.skeleton-table')
+            </div>
+        </template>
+
+        <template x-if="!loading">
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         @if ($tickets->isEmpty())
             <div class="p-10 text-center">
                 <p class="text-sm text-gray-500">
-                    {{ $tab === 'queue' ? 'No open tickets right now.' : "You haven't claimed any tickets yet." }}
+                    {{ $tab === 'queue' ? 'No open tickets right now.' : (request('status') ? 'No tickets with this status.' : "You haven't claimed any tickets yet.") }}
                 </p>
             </div>
         @else
@@ -99,9 +113,16 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                                     @if ($tab === 'queue')
-                                        <form method="POST" action="{{ route('staff.tickets.claim', $ticket) }}">
+                                        <form method="POST" action="{{ route('staff.tickets.claim', $ticket) }}" 
+                                              x-data="{ claiming: false }"
+                                              @submit.prevent="claiming = true; $event.target.submit();"
+                                              class="inline">
                                             @csrf
-                                            <button type="submit" class="text-blue-600 hover:text-blue-700 font-medium">Claim</button>
+                                            <button type="submit" x-bind:disabled="claiming" 
+                                                    class="text-blue-600 hover:text-blue-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <span x-show="!claiming">Claim</span>
+                                                <span x-show="claiming">Claiming...</span>
+                                            </button>
                                         </form>
                                     @else
                                         <a href="{{ route('staff.tickets.show', $ticket) }}" class="text-blue-600 hover:text-blue-700 font-medium">View</a>
@@ -112,7 +133,9 @@
                     </tbody>
                 </table>
             </div>
-        @endif
+@endif
+        </div>
+        </template>
     </div>
 
     <div class="mt-4">

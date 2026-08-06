@@ -21,6 +21,8 @@ class StoreTechnicalStaffRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'employee_id' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'role' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'position' => ['nullable', 'string', 'max:100'],
             'password' => ['required', 'confirmed', Password::defaults()],

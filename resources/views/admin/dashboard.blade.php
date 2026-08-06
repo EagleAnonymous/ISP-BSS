@@ -15,24 +15,35 @@
         </div>
     </div>
 
-    <div>
+    <div x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 500)">
         <div class="flex items-center justify-between mb-3">
             <h3 class="text-sm font-semibold text-gray-900">Billing this month</h3>
             <a href="{{ route('admin.billing.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-700">View billing &rarr;</a>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Billed</p>
-                <p class="mt-1.5 text-2xl font-semibold text-gray-900">₱{{ number_format($summary['billed'], 2) }}</p>
+
+        <template x-if="loading">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                @include('partials.skeleton-card')
+                @include('partials.skeleton-card')
+                @include('partials.skeleton-card')
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Collected</p>
-                <p class="mt-1.5 text-2xl font-semibold text-green-700">₱{{ number_format($summary['collected'], 2) }}</p>
+        </template>
+
+        <template x-if="!loading">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Billed</p>
+                    <p class="mt-1.5 text-2xl font-semibold text-gray-900">₱{{ number_format($summary['billed'], 2) }}</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Collected</p>
+                    <p class="mt-1.5 text-2xl font-semibold text-green-700">₱{{ number_format($summary['collected'], 2) }}</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Outstanding</p>
+                    <p class="mt-1.5 text-2xl font-semibold text-amber-700">₱{{ number_format($summary['outstanding'], 2) }}</p>
+                </div>
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Outstanding</p>
-                <p class="mt-1.5 text-2xl font-semibold text-amber-700">₱{{ number_format($summary['outstanding'], 2) }}</p>
-            </div>
-        </div>
+        </template>
     </div>
 </x-admin-layout>

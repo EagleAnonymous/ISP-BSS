@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>ISP BSS</title>
+        {{-- Global app favicon --}}
+        <link rel="icon" type="image/png" href="{{ asset('image/icon-removebg-preview.png') }}">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased" style="background-image: url('{{ asset('image/Background-image.png') }}'); background-size: cover; background-position: center; background-attachment: fixed;">
@@ -16,7 +18,7 @@
                 <span class="text-4xl font-bold text-gray-600">ISP BSS</span>
             </div>
             {{ $slot }}
-            <div class="absolute bottom-0 w-full py-4 text-center text-[10px] text-gray-700">&copy; 2026 ISP BSS, All rights reserved.</div>
+            <div class="absolute bottom-0 w-full py-4 text-center text-[13px] text-gray-500">&copy; 2026 ISP BSS, All rights reserved.</div>
         </div>
     </body>
 </html>

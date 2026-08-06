@@ -7,7 +7,7 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
 
-            <!-- Email Address -->
+            <!-- Email field -->
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -21,7 +21,7 @@
                 <x-input-error :messages="$errors->get('email')" class="mt-1.5" />
             </div>
 
-            <!-- Password -->
+            <!-- Password field -->
             <div class="relative">
                 <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

@@ -23,13 +23,62 @@ class TicketController extends Controller
     public function index(Request $request): View
     {
         $tab = $request->string('tab', 'queue')->value();
-        $staff = Auth::user()->technicalStaff;
+        $staff = $request->user()->technicalStaff;
 
-        $tickets = $tab === 'mine'
-            ? Ticket::with(['subscriber.user'])->where('assigned_to', $staff->id)->latest()->paginate(15)
-            : Ticket::with(['subscriber.user'])->where('status', 'open')->latest()->paginate(15);
+        $ticketsQuery = Ticket::with(['subscriber.user']);
+
+        if ($tab === 'mine') {
+            $ticketsQuery->where('assigned_to', $staff->id);
+
+            if ($status = $request->string('status', '')->value()) {
+                $ticketsQuery->where('status', $status);
+            }
+        } else {
+            $ticketsQuery->where('status', 'open');
+        }
+
+        $tickets = $ticketsQuery->latest()->paginate(15);
 
         return view('staff.tickets.index', ['tickets' => $tickets, 'tab' => $tab]);
+    }
+
+    /**
+     * "My Assigned Tickets" grid — tickets claimed by the logged-in staff member.
+     * Supports status filtering via the pill tabs and paginates the result set.
+     */
+    public function assignments(Request $request): View
+    {
+        $staff = $request->user()->technicalStaff;
+
+        $base = Ticket::with(['subscriber.user'])
+            ->where('assigned_to', $staff->id);
+
+        // Dynamic counts for the status filter tabs.
+        $statusCounts = [
+            'all' => (clone $base)->count(),
+            'open' => (clone $base)->where('status', 'open')->count(),
+            'in_progress' => (clone $base)->where('status', 'in_progress')->count(),
+            'pending' => (clone $base)->where('status', 'assigned')->count(),
+            'resolved' => (clone $base)->where('status', 'resolved')->count(),
+            'closed' => (clone $base)->where('status', 'closed')->count(),
+        ];
+
+        $currentStatus = $request->string('status', 'all')->value();
+
+        $query = (clone $base);
+        if ($currentStatus === 'pending') {
+            $query->where('status', 'assigned');
+        } elseif ($currentStatus !== 'all') {
+            $query->where('status', $currentStatus);
+        }
+
+        $assignedTickets = $query->latest()->paginate(9);
+
+        return view('staff.assignments', [
+            'assignedTickets' => $assignedTickets,
+            'statusCounts' => $statusCounts,
+            'currentStatus' => $currentStatus,
+        ]);
     }
 
     /**
@@ -95,9 +144,9 @@ class TicketController extends Controller
      * of both being assigned to it (same pattern as
      * BillingController::markPaid()).
      */
-    public function claim(Ticket $ticket): RedirectResponse
+    public function claim(Request $request, Ticket $ticket): RedirectResponse
     {
-        $staff = Auth::user()->technicalStaff;
+        $staff = $request->user()->technicalStaff;
 
         DB::transaction(function () use ($ticket, $staff) {
             $locked = Ticket::where('id', $ticket->id)->lockForUpdate()->firstOrFail();
@@ -120,9 +169,9 @@ class TicketController extends Controller
      * Start work on a ticket you've claimed. Only the assigned staff
      * member can do this — someone else's claim can't be started by you.
      */
-    public function start(Ticket $ticket): RedirectResponse
+    public function start(Request $request, Ticket $ticket): RedirectResponse
     {
-        $staff = Auth::user()->technicalStaff;
+        $staff = $request->user()->technicalStaff;
 
         abort_if($ticket->assigned_to !== $staff->id, 403, 'Only the staff member who claimed this ticket can start it.');
         abort_if($ticket->status !== 'assigned', 422, 'Only an assigned ticket can be started.');
@@ -142,7 +191,7 @@ class TicketController extends Controller
      */
     public function resolve(ResolveTicketRequest $request, Ticket $ticket): RedirectResponse
     {
-        $staff = Auth::user()->technicalStaff;
+        $staff = $request->user()->technicalStaff;
 
         abort_if($ticket->assigned_to !== $staff->id, 403, 'Only the staff member who claimed this ticket can resolve it.');
         abort_if($ticket->status !== 'in_progress', 422, 'Only a ticket that is in progress can be resolved.');
@@ -161,5 +210,4 @@ class TicketController extends Controller
 
         return redirect()->route('staff.tickets.show', $ticket)->with('status', 'ticket-resolved');
     }
-
 }
